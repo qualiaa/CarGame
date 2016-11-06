@@ -16,16 +16,16 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
     public inline function magnitude() : Float{
         return Math.sqrt(magnitudeSquared());
     }
-    
+
     public inline function magnitudeSquared() : Float {
         return this.x*this.x + this.y*this.y;
     }
-    
+
     public function unit() : Point {
         var p = new Point(this);
         return p/p.magnitude();
     }
-    
+
     public function rotate(angle: Float) : Point
     {
         var toRad = Math.PI / 180;
@@ -55,7 +55,7 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
     public function dot(p : FlxPoint) : Float {
         return this.x * p.x + this.y * p.y;
     }
-    
+
     public function cross(p : FlxPoint) : Float {
         var pp = new Point(p);
         return pp.dot(normal());
@@ -66,13 +66,13 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
     {
         return "(" + this.x + ", " + this.y + ")";
     }
-        
+
     @:op(-A)
     public inline function negate() : Point
     {
         return FlxPoint.get(-this.x,-this.y);
     }
-    
+
     @:op(A + B)
     public inline function add_p(rhs:FlxPoint) : Point {
         return FlxPoint.get(this.x + rhs.x, this.y + rhs.y);
@@ -101,10 +101,12 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
         return FlxPoint.get(this.x - rhs, this.y - rhs);
     }
 
+    @:commutative
     @:op(A * B)
     public inline function mul_i(rhs:Int) : Point {
         return FlxPoint.get(this.x * rhs, this.y * rhs);
     }
+    @:commutative
     @:op(A * B)
     public inline function mul_f(rhs:Float) : Point {
         return FlxPoint.get(this.x * rhs, this.y * rhs);
