@@ -55,6 +55,10 @@ class Player implements Subject
             if (control.steer()) {
                 notify(CONTROL_STEER);
             }
+
+            if (control.accelerate()) {
+                notify(CONTROL_ACCELERATE);
+            }
         }
         else //inGame
         {

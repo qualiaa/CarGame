@@ -4,9 +4,11 @@ import flixel.input.gamepad.FlxGamepad;
 
 class PadControl implements Control
 {
-    private var pad_ : FlxGamepad;
+    var pad_ : FlxGamepad;
+    var lastSteerAmount_ = 0.0;
 
-    private static inline var analogThreshold = 0.5;
+    static inline var steerThreshold = 0.1;
+    static inline var analogThreshold = 0.5;
 
     public function new(pad :FlxGamepad)
     {
@@ -42,21 +44,29 @@ class PadControl implements Control
         }
 
         steer = function() {
-            if (pad_.analog.justMoved.LEFT_STICK_X) {
-                trace (pad_.analog.value.LEFT_STICK_X);
-                steerAngle = pad_.analog.value.LEFT_STICK_X * 180;
+            steerAmount = pad_.analog.value.LEFT_STICK_X;
+            trace(steerAmount);
+            if (Math.abs(steerAmount - lastSteerAmount_) > steerThreshold) {
+                lastSteerAmount_ = steerAmount;
                 return true;
             }
             return false;
         }
+
+        accelerate = function() {
+            accelerateAmount = 1.0;
+            return pad_.pressed.A;
+        }
     }
     public var id(default,null) : Int;
-    public var back        : Void -> Bool;
-    public var ready       : Void -> Bool;
-    public var unready     : Void -> Bool;
-    public var pause       : Void -> Bool;
-    public var quit        : Void -> Bool;
-    public var switchColor : Void -> Direction;
-    public var steer       : Void -> Bool;
-    public var steerAngle(default,null) = 0.0;
+    public var back             : Void -> Bool;
+    public var ready            : Void -> Bool;
+    public var unready          : Void -> Bool;
+    public var pause            : Void -> Bool;
+    public var quit             : Void -> Bool;
+    public var switchColor      : Void -> Direction;
+    public var steer            : Void -> Bool;
+    public var accelerate       : Void -> Bool;
+    public var steerAmount     (default,null) = 0.0;
+    public var accelerateAmount(default,null) = 0.0;
 }

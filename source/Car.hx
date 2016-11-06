@@ -32,6 +32,11 @@ class Car extends FlxSprite implements Observer
         Glass  => 0xff8cd8f4
     ];
 
+    public static inline var carWidth  = 24;
+    public static inline var carHeight = 13;
+    static var frontWindscreenShape = new Rectangle(15,2,3,9);
+    static var backWindscreenShape  = new Rectangle(2,2,2,9);
+
     static var wheelOffsets = [
         FlxPoint.get(-9,-7.5),
         FlxPoint.get(-9, 5.5),
@@ -39,17 +44,19 @@ class Car extends FlxSprite implements Observer
         FlxPoint.get( 6, 5.5),
     ];
 
-    public static inline var carWidth  = 24;
-    public static inline var carHeight = 13;
-    public static var frontWindscreenShape = new Rectangle(15,2,3,9);
-    public static var backWindscreenShape = new Rectangle(2,2,2,9);
+    static var maxWheelRotation = 45;
+    static var deltaAcceleration = 0.01;
+    static var maxSpeed = 10;
 
     public var carColor(default,null) : Color = Red;
 
-    var player_ : Player;
 
     var steerAngle_ = 30.0;
+    var speed_      = 0.0;
+    var direction_  = FlxPoint.get(1.0,0);
+
     var wheels_ : Array<Wheel> = [];
+    var player_ : Player;
 
 
     public function new (p: Player, ?x:Float = 0, ?y:Float = 0)
@@ -64,7 +71,6 @@ class Car extends FlxSprite implements Observer
         graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
         graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
         loadGraphic(graphic);
-
 
         // Create wheels
         for (i in 0...4) {
@@ -81,7 +87,20 @@ class Car extends FlxSprite implements Observer
 
     public override function update(dt: Float)
     {
+        /*
+           if steerAngle - 0.0 < circleRadius =
+            deltaAngle =
+        */
+        x += speed_ * direction_.x;
+        y += speed_ * direction_.y;
         positionWheels();
+    }
+
+    private function accelerate() : Void
+    {
+        speed_ += deltaAcceleration * player_.control.accelerateAmount;
+
+        if (speed_ > maxSpeed) speed_ = maxSpeed;
     }
 
     public function onNotify(e: Event, s: Subject) {
@@ -90,7 +109,9 @@ class Car extends FlxSprite implements Observer
             switch(e) {
                 case CONTROL_STEER:
                     trace("Steer event received");
-                    steerAngle_ = player_.control.steerAngle;
+                    steerAngle_ = player_.control.steerAmount * maxWheelRotation;
+                case CONTROL_ACCELERATE:
+                    accelerate();
                 default:
             }
         }

@@ -10,5 +10,7 @@ interface Control
     public var quit : Void -> Bool;
     public var switchColor : Void -> Direction;
     public var steer : Void -> Bool;
-    public var steerAngle(default,null) : Float;
+    public var accelerate : Void -> Bool;
+    public var accelerateAmount(default,null) : Float;
+    public var steerAmount(default,null) : Float;
 }

@@ -118,6 +118,10 @@ class MenuState extends FlxState implements Observer
         trace("Starting game");
 
         FlxG.switchState(new PlayState(players_));
+        for (player in players_) {
+            player.deregister(this);
+            player.deregister(playerIndicators_[player]);
+        }
     }
 
     public function onNotify(e: Event, s : Subject)

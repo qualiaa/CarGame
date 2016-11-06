@@ -5,4 +5,5 @@ enum Event {
     PLAYER_READY;
     PLAYER_UNREADY;
     CONTROL_STEER;
+    CONTROL_ACCELERATE;
 }
