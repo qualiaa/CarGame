@@ -40,12 +40,23 @@ class PadControl implements Control
                 return FORWARD;
             }
         }
+
+        steer = function() {
+            if (pad_.analog.justMoved.LEFT_STICK_X) {
+                trace (pad_.analog.value.LEFT_STICK_X);
+                steerAngle = pad_.analog.value.LEFT_STICK_X * 180;
+                return true;
+            }
+            return false;
+        }
     }
     public var id(default,null) : Int;
-    public var back : Void -> Bool;
-    public var ready : Void -> Bool;
-    public var unready : Void -> Bool;
-    public var pause : Void -> Bool;
-    public var quit : Void -> Bool;
+    public var back        : Void -> Bool;
+    public var ready       : Void -> Bool;
+    public var unready     : Void -> Bool;
+    public var pause       : Void -> Bool;
+    public var quit        : Void -> Bool;
     public var switchColor : Void -> Direction;
+    public var steer       : Void -> Bool;
+    public var steerAngle(default,null) = 0.0;
 }

@@ -4,49 +4,65 @@ import flixel.input.gamepad.FlxGamepad;
 
 class Player implements Subject
 {
-    public var controller(default, null) : Control;
-    public var id (default, null) : Int;
-    public var ready(default, null) = false;
+    public var control(default, null) : Control;
+    public var id        (default, null) : Int;
+    public var steerAngle(default, null) = 0.0;
+    public var ready     (default, null) = false;
+    public var inGame    (default, null) = false;
     public var color : Car.Color;
 
     private var observers_ : Array<Observer> = [];
-    
+
     public static var numPlayers(default,null) = 0;
 
     public function new(c : Control)
     {
-        controller = c;
+        control = c;
         id = ++numPlayers;
+        color = Yellow;
     }
 
     private function handleInput() {
-        if (!ready) {
-            if (controller.ready()) {
-                ready = true;
-                notify(PLAYER_READY);
+        if (!inGame)
+        {
+            if (!ready)
+            {
+                if (control.ready())
+                {
+                    ready = true;
+                    notify(PLAYER_READY);
+                }
+                else if (control.back())
+                {
+                    --numPlayers;
+                    notify(PLAYER_QUIT);
+                    // TODO remove player from MenuState list
+                }
             }
-            else if (controller.quit()) {
-                --numPlayers;
-                notify(PLAYER_QUIT);
-                // TODO remove player from MenuState list
+            else //ready
+            {
+                if (control.unready())
+                {
+                    ready = false;
+                    notify(PLAYER_UNREADY);
+                }
+                else if (control.switchColor() != FORWARD)
+                {
+                    // modify the colour from shared colour pool
+                }
+            }
+
+            if (control.steer()) {
+                notify(CONTROL_STEER);
             }
         }
-        else {
-            if (controller.unready()) {
-                ready = false;
-                notify(PLAYER_UNREADY);
-            }
-            else if (controller.switchColor() != FORWARD) {
-                // modify the colour from shared colour pool
-            }
+        else //inGame
+        {
         }
     }
 
     public function update() {
         handleInput();
-        if (controller.ready()) {
-            trace("Ready pressed");
-        }
     }
 
     public function register(o : Observer)

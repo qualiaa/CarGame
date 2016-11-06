@@ -52,6 +52,7 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
             case PLAYER_READY: playerReadyAction();
             case PLAYER_UNREADY: playerUnreadyAction();
             case PLAYER_QUIT: playerQuitAction();
+            default:
         }
     }
 

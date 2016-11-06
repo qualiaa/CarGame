@@ -9,4 +9,6 @@ interface Control
     public var pause : Void -> Bool;
     public var quit : Void -> Bool;
     public var switchColor : Void -> Direction;
+    public var steer : Void -> Bool;
+    public var steerAngle(default,null) : Float;
 }

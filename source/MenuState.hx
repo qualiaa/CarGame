@@ -53,7 +53,7 @@ class MenuState extends FlxState implements Observer
         for (pad in activePads_) {
             if (pad.justPressed.START &&
                 players_.filter(function(p) {
-                    return p.controller.id == pad.id;
+                    return p.control.id == pad.id;
                 }).length == 0) {
                 addPlayer(new PadControl(pad));
             }
@@ -117,13 +117,13 @@ class MenuState extends FlxState implements Observer
     {
         trace("Starting game");
 
-        FlxG.switchState(new PlayState());
+        FlxG.switchState(new PlayState(players_));
     }
 
     public function onNotify(e: Event, s : Subject)
     {
         switch(e) {
-            case PLAYER_READY: 
+            case PLAYER_READY:
                 if (players_.filter(function(p) {return p.ready;}).length ==
                         players_.length) {
                     startTimer.start(1.0,function(t) {
@@ -136,7 +136,7 @@ class MenuState extends FlxState implements Observer
                         }
                     }, gameStartTime + 1);
                 };
-            case PLAYER_UNREADY: 
+            case PLAYER_UNREADY:
                 startTimer.reset();
             case PLAYER_QUIT:
                 var target : Player = null;

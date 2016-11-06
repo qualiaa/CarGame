@@ -9,21 +9,37 @@ import flixel.math.FlxMath;
 
 class PlayState extends FlxState
 {
-    var car : Car;
-    var track : Track;
+    var track_ : Track;
+
+    var players_ : Array<Player>;
+    var cars_ : Array<Car> = [];
+
+    public function new(players : Array<Player>) {
+        super();
+        players_ = players;
+    }
 
 	override public function create():Void
 	{
 		super.create();
 
-        track = new Track();
-        add(track);
-        car = new Car(10,10);
-        add(car);
+        track_ = new Track();
+        add(track_);
+
+        for (player in players_) {
+            var car = new Car(player);
+            player.register(car);
+            cars_.push(car);
+            add(car);
+        }
 	}
 
-	override public function update(elapsed:Float):Void
+	public override function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+
+        for (player in players_) {
+            player.update();
+        }
 	}
 }
