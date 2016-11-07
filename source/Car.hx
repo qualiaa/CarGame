@@ -34,6 +34,12 @@ class Car extends FlxSprite implements Observer
 
     public static inline var carWidth  = 24;
     public static inline var carHeight = 13;
+    public static inline var pixelPerMeter = carWidth/4.5;
+    public static inline var gravity = 9.8 * pixelPerMeter / 60;
+    public static inline var frictionCoefficientMud = 0.57;
+    public static inline var frictionCoefficientIce = 0.57;
+    public static inline var frictionCoefficientRoad = 1.0;
+
     public static var carMass = 1;
 
     static var wheelOffsets : Array<Point> = [
@@ -57,14 +63,10 @@ class Car extends FlxSprite implements Observer
     public var angularFrequency(get,never) : Float;
 
 
-    public static inline var pixelPerMeter = carWidth/4.5;
-    public static inline var gravity = 9.8 * pixelPerMeter / 60;
-    public static var tractionForce = 0.3;
-    public static var dragCoefficient(default,never) = 0.005;
-    public static inline var frictionCoefficientMud = 0.57;
-    public static inline var frictionCoefficientIce = 0.57;
-    public static inline var frictionCoefficientRoad = 1.0;
-    public static inline var brakeCoefficient = 0.01;
+    public static var tractionForce = 0.03;
+    public static var dragCoefficient(default,never) = 0.0005;
+    public static var brakeCoefficient = frictionCoefficientMud/60;
+    public static var frictionCoefficient = dragCoefficient*30;
 
 
     var steerAngle_ = 0.0;
@@ -139,6 +141,16 @@ class Car extends FlxSprite implements Observer
     private function brake() : Void
     {
         addForce(-velocity_ * brakeCoefficient);
+    }
+
+    private function dragForce() : Point
+    {
+        return -velocity_ * velocity_.magnitude() * dragCoefficient   ;
+    }
+
+    private function frictionForce() : Point
+    {
+        return - velocity_.unit() * frictionCoefficient;
     }
 
     public function addForce(f : Point) : Void
@@ -263,21 +275,6 @@ class Car extends FlxSprite implements Observer
         line(center, center + direction_.normal() * acrossMag * 100, FlxColor.RED);
 
 
-    }
-
-    private function frictionCoefficient() : Float
-    {
-        return dragCoefficient*30;
-    }
-
-    private function dragForce() : Point
-    {
-        return -velocity_ * velocity_.magnitude() * dragCoefficient   ;
-    }
-
-    private function frictionForce() : Point
-    {
-        return - velocity_.unit() * frictionCoefficient();
     }
 
     private function line(p1:Point,p2:Point,
