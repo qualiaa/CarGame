@@ -65,11 +65,12 @@ class Car extends FlxSprite implements Observer
 
     public static var tractionForce = 0.03;
     public static var dragCoefficient(default,never) = 0.0005;
-    public static var brakeCoefficient = frictionCoefficientMud/60;
+    public static var brakeCoefficient = frictionCoefficientRoad/60;
     public static var frictionCoefficient = dragCoefficient*30;
 
 
-    var steerAngle_ = 0.0;
+    var steerAmount_ = 0.0;
+    var steerAngle_ (get, never): Float;
     var speed_      = 0.0;
     var velocity_   = Point.zero;
     var direction_  = Point.axisX;
@@ -81,14 +82,17 @@ class Car extends FlxSprite implements Observer
 
     var position (get,set): Point;
 
-    public function new (p: Player, ?x:Float = 0, ?y:Float = 0)
+    public function new (p: Player, ?x:Float = 0, ?y:Float = 0, ?debugLayer)
     {
         super(x,y);
 
         player_ = p;
+        var color : Color = (player_ == null) ? Black : player_.color;
 
         var graphic =
-            new BitmapData(carWidth,carHeight, true, Car.colorTable[p.color]);
+            new BitmapData(carWidth,carHeight, true, Car.colorTable[color]);
+
+        debugLayer_ = debugLayer;
 
         graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
         graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
@@ -106,16 +110,10 @@ class Car extends FlxSprite implements Observer
         }
 
         FlxG.state.add(this);
-
-        debugLayer_ = new FlxSprite();
-        debugLayer_.makeGraphic(640,480,FlxColor.fromInt(0x00));
-        FlxG.state.add(debugLayer_);
     }
 
     public override function update(dt: Float)
     {
-        debugLayer_.fill(FlxColor.TRANSPARENT);
-
         resolveForces();
         var w = angularFrequency;
         if (w != 0.0) {
@@ -128,7 +126,7 @@ class Car extends FlxSprite implements Observer
 
         positionWheels();
 
-        if (FlxG.debugger.visible) {
+        if (FlxG.debugger.visible && debugLayer_ != null) {
             drawDebugInformation();
         }
     }
@@ -140,12 +138,16 @@ class Car extends FlxSprite implements Observer
 
     private function brake() : Void
     {
-        addForce(-velocity_ * brakeCoefficient);
+        var brakeForce = -velocity_ * brakeCoefficient;
+        if (forceApplication(brakeForce).magnitude() > velocity_.magnitude()) {
+            brakeForce = -velocity_ * carMass;
+        }
+        addForce(brakeForce);
     }
 
     private function dragForce() : Point
     {
-        return -velocity_ * velocity_.magnitude() * dragCoefficient   ;
+        return -velocity_ * velocity_.magnitude() * dragCoefficient;
     }
 
     private function frictionForce() : Point
@@ -158,6 +160,11 @@ class Car extends FlxSprite implements Observer
         forces_.push(f);
     }
 
+    public function forceApplication(f : Point) : Point
+    {
+        return f / carMass;
+    }
+
     private function resolveForces() : Void
     {
         addForce(dragForce());
@@ -166,7 +173,7 @@ class Car extends FlxSprite implements Observer
         }
 
         for (force in forces_) {
-            velocity_ += force / carMass;
+            velocity_ += forceApplication(force);
         }
         forces_ = [];
     }
@@ -196,13 +203,18 @@ class Car extends FlxSprite implements Observer
         destroy();
     }
 
+    public function get_steerAngle_() : Float {
+        return steerAmount_ / (1+ velocity_.magnitude());
+    }
+
     public function onNotify(e: Event, s: Subject) {
         //trace("Event received");
         if (s == player_) {
             switch(e) {
                 case CONTROL_STEER:
                     //trace("Steer event received");
-                    steerAngle_ = player_.control.steerAmount * maxWheelRotation;
+                    steerAmount_ = player_.control.steerAmount *
+                        maxWheelRotation;
                 case CONTROL_ACCELERATE:
                     accelerate();
                 case CONTROL_BRAKE:
@@ -261,21 +273,29 @@ class Car extends FlxSprite implements Observer
         debugLayer_.drawCircle(center.x,center.y,2,FlxColor.BLUE);
 
         // Wheel lines
-        var frontWheel = (steerAngle_ < 0) ? wheels_[2] : wheels_[3];
-        var backWheel  = (steerAngle_ < 0) ? wheels_[0] : wheels_[1];
-        var backNormal = direction_.normal() * d;
-        var frontNormal = Point.axisX.rotate(frontWheel.angle).normal() * d;
-        line(backWheel.center, backWheel.center+backNormal*10,FlxColor.WHITE);
-        line(frontWheel.center, frontWheel.center+frontNormal*10,FlxColor.WHITE);
+        if (steerAngle_ != 0.0) {
+            var frontWheel = (steerAngle_ < 0) ? wheels_[2] : wheels_[3];
+            var backWheel  = (steerAngle_ < 0) ? wheels_[0] : wheels_[1];
+            var backNormal = direction_.normal() * d;
+            var frontNormal = Point.axisX.rotate(frontWheel.angle).normal() * d;
+            line(backWheel.center, backWheel.center+backNormal*10,FlxColor.WHITE);
+            line(frontWheel.center, frontWheel.center+frontNormal*10,FlxColor.WHITE);
+        }
 
         // Velocity lines
         var alongMag  = velocity_.magnitude() * Math.cos(Math.PI*w/180);
         var acrossMag = velocity_.magnitude() * Math.sin(Math.PI*w/180);
-        line(center, center + direction_          * alongMag  * 100);
-        line(center, center + direction_.normal() * acrossMag * 100, FlxColor.RED);
-
-
+        line(center, center + direction_          * alongMag  * 10);
+        line(center, center + direction_.normal() * acrossMag * 10, FlxColor.RED);
     }
+
+    public override function set_angle(a : Float) : Float
+    {
+        super.set_angle(a);
+        direction_ = Point.axisX.rotate(a);
+        return a;
+    }
+
 
     private function line(p1:Point,p2:Point,
                           c:FlxColor = FlxColor.BLACK,t :Int = 1) : Void
