@@ -27,10 +27,9 @@ class PlayState extends FlxState
         add(track_);
 
         for (player in players_) {
-            var car = new Car(player);
+            var car = new Car(player,100,10);
             player.register(car);
             cars_.push(car);
-            add(car);
         }
 	}
 
