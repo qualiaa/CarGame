@@ -193,7 +193,7 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
         return !(this == rhs);
     }
 
-    public static var zero(default, never)  = Point.getXY(0,0);
-    public static var axisX(default, never) = Point.getXY(1,0);
-    public static var axisY(default, never) = Point.getXY(0,1);
+    public static var zero(default, never)  = Point.fromXY(0,0);
+    public static var axisX(default, never) = Point.fromXY(1,0);
+    public static var axisY(default, never) = Point.fromXY(0,1);
 }
