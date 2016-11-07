@@ -192,4 +192,8 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
     public inline function ncmp(rhs:FlxPoint) : Bool {
         return !(this == rhs);
     }
+
+    public static var zero(default, never)  = Point.getXY(0,0);
+    public static var axisX(default, never) = Point.getXY(1,0);
+    public static var axisY(default, never) = Point.getXY(0,1);
 }
