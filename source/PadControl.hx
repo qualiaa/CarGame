@@ -45,7 +45,6 @@ class PadControl implements Control
 
         steer = function() {
             steerAmount = pad_.analog.value.LEFT_STICK_X;
-            trace(steerAmount);
             if (Math.abs(steerAmount - lastSteerAmount_) > steerThreshold) {
                 lastSteerAmount_ = steerAmount;
                 return true;
@@ -57,6 +56,10 @@ class PadControl implements Control
             accelerateAmount = 1.0;
             return pad_.pressed.A;
         }
+
+        brake = function() {
+            return pad_.pressed.B;
+        }
     }
     public var id(default,null) : Int;
     public var back             : Void -> Bool;
@@ -67,6 +70,7 @@ class PadControl implements Control
     public var switchColor      : Void -> Direction;
     public var steer            : Void -> Bool;
     public var accelerate       : Void -> Bool;
+    public var brake            : Void -> Bool;
     public var steerAmount     (default,null) = 0.0;
     public var accelerateAmount(default,null) = 0.0;
 }

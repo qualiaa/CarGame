@@ -6,4 +6,5 @@ enum Event {
     PLAYER_UNREADY;
     CONTROL_STEER;
     CONTROL_ACCELERATE;
+    CONTROL_BRAKE;
 }
