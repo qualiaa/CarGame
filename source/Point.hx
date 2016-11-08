@@ -26,6 +26,19 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
         return p/p.magnitude();
     }
 
+    public function normal(): Point {
+        return FlxPoint.get(-this.y,this.x);
+    }
+
+    public function dot(p : FlxPoint) : Float {
+        return this.x * p.x + this.y * p.y;
+    }
+
+    public function cross(p : FlxPoint) : Float {
+        var pp = new Point(p);
+        return pp.dot(normal());
+    }
+
     public function rotate(angle: Float) : Point
     {
         var toRad = Math.PI / 180;
@@ -48,17 +61,19 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
         return radToDeg * Math.atan2(cross(p), dot(p));
     }
 
-    public function normal(): Point {
-        return FlxPoint.get(-this.y,this.x);
+    public function project (p: Point) : Float
+    {
+        return dot(p.unit());
     }
 
-    public function dot(p : FlxPoint) : Float {
-        return this.x * p.x + this.y * p.y;
+    public function fromFrame(f : Frame) : Point
+    {
+        return f.x * this.x + f.y * this.y;
     }
 
-    public function cross(p : FlxPoint) : Float {
-        var pp = new Point(p);
-        return pp.dot(normal());
+    public function toFrame(f : Frame) : Point
+    {
+        return Point.fromXY(dot(f.y.normal()),dot(f.x.normal()));
     }
 
     @:to(String)
@@ -196,4 +211,8 @@ abstract Point(FlxPoint) from FlxPoint to FlxPoint
     public static var zero(default, never)  = Point.fromXY(0,0);
     public static var axisX(default, never) = Point.fromXY(1,0);
     public static var axisY(default, never) = Point.fromXY(0,1);
+    public static var positiveInfinity(default, never) =
+        Point.fromXY(Math.POSITIVE_INFINITY,Math.POSITIVE_INFINITY);
+    public static var negativeInfinity(default, never) =
+        Point.fromXY(Math.NEGATIVE_INFINITY,Math.NEGATIVE_INFINITY);
 }
