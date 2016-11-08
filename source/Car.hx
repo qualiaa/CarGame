@@ -129,6 +129,8 @@ class Car extends FlxSprite implements Observer
         if (FlxG.debugger.visible && debugLayer_ != null) {
             drawDebugInformation();
         }
+        collideAABB = false;
+        collideOBB = false;
     }
 
     private function accelerate() : Void
@@ -167,8 +169,8 @@ class Car extends FlxSprite implements Observer
 
     private function resolveForces() : Void
     {
-        addForce(dragForce());
         if (velocity_.magnitude() > 0) {
+            addForce(dragForce());
             addForce(frictionForce());
         }
 
@@ -208,11 +210,9 @@ class Car extends FlxSprite implements Observer
     }
 
     public function onNotify(e: Event, s: Subject) {
-        //trace("Event received");
         if (s == player_) {
             switch(e) {
                 case CONTROL_STEER:
-                    //trace("Steer event received");
                     steerAmount_ = player_.control.steerAmount *
                         maxWheelRotation;
                 case CONTROL_ACCELERATE:
@@ -242,7 +242,6 @@ class Car extends FlxSprite implements Observer
             var radius = (wheelBase / Math.sin(Math.PI*steerAngle_/180));
             w = (velocity_.magnitude()/radius)*(180/Math.PI);
         }
-        trace(w);
         return w;
     }
     public function get_center() : Point
@@ -296,6 +295,31 @@ class Car extends FlxSprite implements Observer
         return a;
     }
 
+    public function getAABB() : Rectangle
+    {
+        var a = Std.int(Math.abs(angle)) % 90;
+        if (Std.int(Math.abs(angle)) % 180 != a) {
+            a = 90 - a;
+        };
+
+        var p1 = Point.fromXY(carWidth/2,carHeight/2).rotate(a);
+        var p2 = Point.fromXY(carWidth/2,-carHeight/2).rotate(a);
+
+        return new Rectangle(center.x - p2.x, center.y -p1.y, p2.x*2, p1.y*2);
+    }
+
+    public function getOBB() : OBB
+    {
+        return {
+            axes: { x: Point.axisX.rotate(angle),
+                    y: Point.axisY.rotate(angle)},
+            c: center,
+            sz: Point.fromXY(carWidth/2,carHeight/2)
+        };
+    }
+
+    public var collideAABB = false;
+    public var collideOBB = false;
 
     private function line(p1:Point,p2:Point,
                           c:FlxColor = FlxColor.BLACK,t :Int = 1) : Void
