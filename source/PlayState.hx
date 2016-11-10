@@ -28,19 +28,28 @@ class PlayState extends FlxState
 		super.create();
 
         debugLayer_ = new FlxSprite();
-        debugLayer_.makeGraphic(800,600,FlxColor.fromInt(0x00));
+        debugLayer_.makeGraphic(800,600,FlxColor.TRANSPARENT);
         track_ = new Track();
         add(track_);
 
+        var i : Int = 0;
         for (player in players_) {
-            var car = new Car(player,100,10, debugLayer_);
+            var x = 398 + 41*Std.int(i / 2);
+            var y = 350 + 24*(i % 2);
+            ++i;
+            var car = new Car(player,x,y, debugLayer_);
             player.register(car);
+            car.angle = 180;
             cars_.push(car);
         }
 
-        var car = new Car(null, 100,100, debugLayer_);
-        add(car);
-        cars_.push(car);
+        for (j in i...6) {
+            var x = 398 + 41*Std.int(j / 2);
+            var y = 350 + 24*(j % 2);
+            var car = new Car(null, x,y, debugLayer_);
+            add(car);
+            cars_.push(car);
+        }
         add(debugLayer_);
 	}
 
@@ -61,16 +70,15 @@ class PlayState extends FlxState
                 if (testAABB(aabb, carB.getAABB())) {
                     carA.collideAABB = true;
                     carB.collideAABB = true;
-                }
-
-                if (testOBB(obb, carB.getOBB())) {
-                    carA.collideOBB = true;
-                    carB.collideOBB = true;
+                    if (testOBB(obb, carB.getOBB())) {
+                        carA.collideOBB = true;
+                        carB.collideOBB = true;
+                    }
                 }
             }
 
             if (FlxG.debugger.visible && debugLayer_ != null) {
-                //drawAABB(aabb,carA.collideAABB);
+                drawAABB(aabb,carA.collideAABB);
                 drawOBB(obb,carA.collideOBB);
             }
         }
@@ -153,9 +161,11 @@ class PlayState extends FlxState
     }
     private function drawAABB(aabb : Rectangle, collide : Bool) : Void
     {
+        var color = collide ? FlxColor.RED : FlxColor.CYAN;
+        color.alpha = 127;
         debugLayer_.drawRect(aabb.x,aabb.y, aabb.width,aabb.height,
             FlxColor.TRANSPARENT,
-            {color: collide ? FlxColor.RED : FlxColor.CYAN});
+            {color:color});
     }
 
     private function line(p1:Point,p2:Point,
