@@ -12,6 +12,7 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
 {
     public var player_(default,null) : Player;
     public var groupScale(default,set) : Float;
+    public var car_ : Car;
 
     var text_ : FlxText;
 
@@ -44,16 +45,26 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
             ease: entryTween,
             startDelay: entryDelay
         });
+        car_ = new Car(null, x, y);
+        FlxG.state.add(car_);
     }
 
     public function onNotify(e: Event, s: Subject) : Void
     {
         switch(e) {
+            case PLAYER_SWITCH_COLOR: car_.carColor = player_.color;
             case PLAYER_READY: playerReadyAction();
             case PLAYER_UNREADY: playerUnreadyAction();
             case PLAYER_QUIT: playerQuitAction();
             default:
         }
+    }
+
+    public override function update(dt:Float) : Void
+    {
+        car_.angle++;
+        car_.x = x;
+        car_.y = y;
     }
 
     public function setTargetIndex(i : Int, n : Int) : Void

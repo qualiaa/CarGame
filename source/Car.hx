@@ -57,7 +57,7 @@ class Car extends FlxSprite implements Observer
     static var maxWheelRotation = 30;
     static var maxSpeed = 2;
 
-    public var carColor(default,null) : Color = Red;
+    public var carColor (default,set): Color = Red;
     public var center(get,never) : Point;
 
     public var angularFrequency(get,never) : Float;
@@ -82,21 +82,32 @@ class Car extends FlxSprite implements Observer
 
     var position (get,set): Point;
 
+    public function set_carColor(c:Color) : Color
+    {
+        var graphic =
+            new BitmapData(carWidth,carHeight, true, Car.colorTable[c]);
+
+        graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
+        graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
+
+        graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
+        graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
+
+        loadGraphic(graphic);//pixels = graphic;
+        trace("Changing color to " + c);
+
+        return c;
+    }
+
     public function new (p: Player, ?x:Float = 0, ?y:Float = 0, ?debugLayer)
     {
         super(x,y);
 
         player_ = p;
-        var color : Color = (player_ == null) ? Black : player_.color;
+        carColor = (player_ == null) ? Black : player_.color;
 
-        var graphic =
-            new BitmapData(carWidth,carHeight, true, Car.colorTable[color]);
 
         debugLayer_ = debugLayer;
-
-        graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
-        graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
-        loadGraphic(graphic);
 
         // Create wheels
         for (i in 0...4) {

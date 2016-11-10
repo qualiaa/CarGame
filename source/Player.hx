@@ -1,6 +1,8 @@
 package;
 
 import flixel.input.gamepad.FlxGamepad;
+import flixel.util.FlxTimer;
+using Lambda;
 
 class Player implements Subject
 {
@@ -9,11 +11,18 @@ class Player implements Subject
     public var steerAngle(default, null) = 0.0;
     public var ready     (default, null) = false;
     public var inGame    (default, null) = false;
-    public var color : Car.Color;
+    public var color     (default, null) : Car.Color;
 
+    public static var colors : Array<Car.Color> = [
+        Red, Yellow, Orange, Pink, Black, White,
+    ];
+    public static var takenColors : Array<Car.Color> = [];
     private var observers_ : Array<Observer> = [];
 
     public static var numPlayers(default,null) = 0;
+
+    var selectTimer_ = new FlxTimer();
+    static inline var selectTime_ = 0.25;
 
     public function new(c : Control)
     {
@@ -22,7 +31,27 @@ class Player implements Subject
         color = Yellow;
     }
 
-    private function handleInput() {
+    private function switchColor(direction : Direction)
+    {
+        var newCol = color;
+        var colorIdx :Int = colors.indexOf(color);
+
+        var otherColors =
+            colors.slice(colorIdx+1).concat(colors.slice(0,colorIdx));
+        if (direction == LEFT) otherColors.reverse();
+
+        newCol = otherColors.find(function(c)
+                    return !takenColors.has(c));
+
+        takenColors.remove(color);
+        takenColors.push(newCol);
+        color = newCol;
+        trace(color);
+        notify(PLAYER_SWITCH_COLOR);
+    }
+
+    private function handleInput()
+    {
         if (!inGame)
         {
             if (!ready)
@@ -37,6 +66,12 @@ class Player implements Subject
                     --numPlayers;
                     notify(PLAYER_QUIT);
                     // TODO remove player from MenuState list
+                }
+                else if (control.switchColor() != FORWARD) {
+                    if (selectTimer_.finished || !selectTimer_.active) {
+                        switchColor(control.switchColor());
+                        selectTimer_.start(selectTime_);
+                    }
                 }
             }
             else //ready
