@@ -90,8 +90,7 @@ class Car extends FlxSprite implements Observer
         graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
         graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
 
-        loadGraphic(graphic);//pixels = graphic;
-        trace("Changing color to " + c);
+        loadGraphic(graphic);
 
         return c;
     }
@@ -188,7 +187,7 @@ class Car extends FlxSprite implements Observer
         forces_ = [];
     }
 
-    private function positionWheels() : Void
+    public function positionWheels() : Void
     {
         var midpoint = Point.fromXY(carWidth/2,carHeight/2);
         for (i in 0...wheels_.length) {
@@ -197,7 +196,8 @@ class Car extends FlxSprite implements Observer
             if (wheel.rotates) {
                 wheel.angle += steerAngle_;
             }
-            var pos = wheelOffsets[i].rotate(angle);
+            wheel.scale = scale;
+            var pos = (wheelOffsets[i]*scale.x).rotate(angle);
             wheel.center = center + pos;
             wheel.position = wheel.center - Point.fromXY(1.5,1);
         }
