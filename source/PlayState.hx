@@ -48,6 +48,7 @@ class PlayState extends FlxState
             var y = 350 + 24*(j % 2);
             var car = new Car(null, x,y, debugLayer_);
             add(car);
+            car.angle = 180;
             cars_.push(car);
         }
         add(debugLayer_);

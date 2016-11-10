@@ -46,7 +46,6 @@ class Player implements Subject
         takenColors.remove(color);
         takenColors.push(newCol);
         color = newCol;
-        trace(color);
         notify(PLAYER_SWITCH_COLOR);
     }
 

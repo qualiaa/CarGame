@@ -21,7 +21,6 @@ class MenuState extends FlxState implements Observer
 
     var maxPlayers_ = 4;
 
-
     static inline var gameStartTime : Int = 0;
     var startTimer = new FlxTimer();
     var gameTimerText : FlxText;
@@ -49,6 +48,14 @@ class MenuState extends FlxState implements Observer
                     addPad(pad);
                     trace(activeThisFrame.length + " pads active");
                 }
+            }
+        }
+
+        if (FlxG.keys.justPressed.SPACE) {
+            if (players_.filter(function(p) {
+                    return p.control.id == -1;
+                }).length == 0) {
+                addPlayer(new KeyboardControl());
             }
         }
 
