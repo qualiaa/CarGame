@@ -6,6 +6,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
 using flixel.tweens.FlxTween;
 
 class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
@@ -23,6 +24,13 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
     static inline var entryTime = 1.0;
     var outTween = FlxEase.quintIn;
     static inline var outTime = 0.5;
+
+    static var rotateTimer_ = new FlxTimer();
+    static inline var rotateTime_ = 8.0;
+    static var scaleTimer_ = new FlxTimer();
+    static inline var scaleTime_ = 4.0;
+    static inline var startScale = 5;
+    static inline var dScale = 0.5;
 
     static var indicatorCoords_ = [
             [{x:1/2, y:1/2}],
@@ -46,7 +54,15 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
             startDelay: entryDelay
         });
         car_ = new Car(null, x, y);
+        car_.scale=FlxPoint.get(startScale,startScale);
         FlxG.state.add(car_);
+
+        if (!rotateTimer_.active) {
+            rotateTimer_.start(rotateTime_,null,0);
+        }
+        if (!scaleTimer_.active) {
+            scaleTimer_.start(scaleTime_,null,0);
+        }
     }
 
     public function onNotify(e: Event, s: Subject) : Void
@@ -62,9 +78,12 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
 
     public override function update(dt:Float) : Void
     {
-        car_.angle++;
+        car_.angle = 360 * rotateTimer_.progress;
+        var s = startScale + dScale*Math.sin(scaleTimer_.progress*2*Math.PI);
+        car_.scale = FlxPoint.get(s,s);
         car_.x = x;
         car_.y = y;
+        car_.positionWheels();
     }
 
     public function setTargetIndex(i : Int, n : Int) : Void
