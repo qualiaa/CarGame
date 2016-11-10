@@ -74,6 +74,7 @@ class PlayState extends FlxState
                     if (testOBB(obb, carB.getOBB())) {
                         carA.collideOBB = true;
                         carB.collideOBB = true;
+                        resolveCollision(carA,carB);
                     }
                 }
             }
@@ -160,6 +161,7 @@ class PlayState extends FlxState
             line(p[i],p[(i+1)%4],color);
         }
     }
+
     private function drawAABB(aabb : Rectangle, collide : Bool) : Void
     {
         var color = collide ? FlxColor.RED : FlxColor.CYAN;
@@ -168,6 +170,23 @@ class PlayState extends FlxState
             FlxColor.TRANSPARENT,
             {color:color});
     }
+
+    private function resolveCollision(carA : Car, carB : Car) {
+        carA.position -= carA.vel;
+        carB.position -= carB.vel;
+
+        var relV = carB.vel - carA.vel;
+        var normal = (carB.center - carA.center).unit();
+
+        var v_n = relV.project(normal);
+
+        var f = -(0.001*v_n / 2);
+
+        carA.vel = carA.vel + normal * v_n;
+        carB.vel = carB.vel - normal * v_n;
+    }
+
+    
 
     private function line(p1:Point,p2:Point,
                           c:FlxColor = FlxColor.BLACK,t :Int = 1) : Void

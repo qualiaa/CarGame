@@ -68,6 +68,8 @@ class Car extends FlxSprite implements Observer
     public static var brakeCoefficient = frictionCoefficientRoad/60;
     public static var frictionCoefficient = dragCoefficient*30;
 
+    public var position (get,set): Point;
+    public var vel(get,set) : Point;
 
     var steerAmount_ = 0.0;
     var steerAngle_ (get, never): Float;
@@ -80,7 +82,16 @@ class Car extends FlxSprite implements Observer
     var player_ : Player;
     var debugLayer_ : FlxSprite;
 
-    var position (get,set): Point;
+    public function set_vel(x: Point) : Point
+    {
+        velocity_ = x;
+        return x;
+    }
+
+    public function get_vel() : Point
+    {
+        return velocity_;
+    }
 
     public function set_carColor(c:Color) : Color
     {
