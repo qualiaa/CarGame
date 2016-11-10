@@ -28,7 +28,8 @@ class Player implements Subject
     {
         control = c;
         id = ++numPlayers;
-        color = Yellow;
+        color = White;
+        switchColor(RIGHT);
     }
 
     private function switchColor(direction : Direction)

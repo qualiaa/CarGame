@@ -17,6 +17,8 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
 
     var text_ : FlxText;
 
+    static var carOffset = Point.fromXY(0, -100);
+
     var moveTween = FlxEase.circInOut;
     static inline var moveTime = 1.0;
     var entryTween = FlxEase.backOut;
@@ -55,6 +57,8 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
         });
         car_ = new Car(null, x, y);
         car_.scale=FlxPoint.get(startScale,startScale);
+        car_.position += carOffset;
+        car_.carColor = player_.color;
         FlxG.state.add(car_);
 
         if (!rotateTimer_.active) {
@@ -83,6 +87,7 @@ class PlayerMenuIndicator extends FlxSpriteGroup implements Observer
         car_.scale = FlxPoint.get(s,s);
         car_.x = x;
         car_.y = y;
+        car_.position += carOffset;
         car_.positionWheels();
     }
 
