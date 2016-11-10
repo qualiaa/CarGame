@@ -46,7 +46,9 @@ class PlayState extends FlxState
 
 	public override function update(elapsed:Float):Void
 	{
-        debugLayer_.fill(FlxColor.TRANSPARENT);
+        if (debugLayer_ != null) {
+            debugLayer_.fill(FlxColor.TRANSPARENT);
+        }
 
 		super.update(elapsed);
 

@@ -90,9 +90,6 @@ class Car extends FlxSprite implements Observer
         graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
         graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
 
-        graphic.fillRect(frontWindscreenShape,Car.colorTable[Glass]);
-        graphic.fillRect(backWindscreenShape,Car.colorTable[Glass]);
-
         loadGraphic(graphic);//pixels = graphic;
         trace("Changing color to " + c);
 
@@ -345,7 +342,7 @@ class Wheel extends FlxSprite
     public static inline var wheelColor : UInt = 0xff33321e;
     public static inline var wheelWidth = 3;
     public static inline var wheelHeight = 2;
-    public static var wheelBmp = new BitmapData(wheelWidth,wheelHeight, true, wheelColor);
+    public var wheelBmp = new BitmapData(wheelWidth,wheelHeight, true, wheelColor);
 
     public var rotates(default,null) = false;
 

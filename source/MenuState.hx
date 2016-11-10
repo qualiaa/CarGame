@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 using flixel.tweens.FlxTween;
 
@@ -35,6 +36,7 @@ class MenuState extends FlxState implements Observer
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+        bgColor=FlxColor.fromInt(0xffc3cb7d);
 
         for (player in players_) {
             player.update();
